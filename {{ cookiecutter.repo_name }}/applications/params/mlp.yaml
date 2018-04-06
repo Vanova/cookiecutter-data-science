@@ -1,0 +1,79 @@
+# Convolutional Recurrent Neural Network (CRNN) settings
+# ==========================================================
+# Flow
+# ==========================================================
+flow:
+  extract_features: true # prepare i-vectors
+  visualize_features: false # t-SNE for i-vec or spectrogram for fbank
+  search_hyperparams: false
+  train_system: true
+  test_system: true
+  calibrate: false
+  visualize_network: false
+  visualize_scores: false
+  evaluate_system: true
+
+# ==========================================================
+# General
+# ==========================================================
+general:
+  system: lre17_mlp_openset # lre17_mlp_fixedset #lre17_mlp_fixedset_MLC
+  development_dataset: CHiMEHome_DomesticAudioTag_DevelopmentSet
+  submission_dataset: CHiMEHome_DomesticAudioTag_ChallengeSet
+
+
+# ==========================================================
+# Paths
+# ==========================================================
+path:
+  development_dataset: /home/vano/wrkdir/projects_data/LRE17/SCORE_FUSION/open_set/
+  evaluation_dataset: /home/vano/wrkdir/projects_data/LRE17/SCORE_FUSION/open_set/
+  base: experiments/
+  features: features/
+  models: models/
+  results_test: test_results/
+  results_eval: eval_results/
+
+
+# ==========================================================
+# Feature extraction
+# ==========================================================
+features:
+  fs: 44100
+  win_length_seconds: 0.04 #def: 0.04
+  hop_length_seconds: 0.02 #def: 0.02
+  type: scores #fbank, stft
+
+  scores:
+    dim: 14
+
+
+# ==========================================================
+# Classifier
+# ==========================================================
+classifier:
+  method: mlp_mfom # cnn, cnn_rnn, cnn_rnn_attention
+  metrics: [eer]
+  pretrain: true
+  finetune: false
+  pretrain_set:
+    activations: [sigmoid, sigmoid, softmax] # ['elu', 'elu', 'elu', 'elu', 'softmax']
+    batch: 8
+    batch_type: ivec_stratified    # rnd_wnd, seq_slide_wnd, TODO: stratified!!!
+    dropout: 0.5
+    dim: 14
+    learn_rate: 0.01
+    loss: mfom_eer_normalized # mfom_eer_uvz #mfom_eer_uvz #mfom_eer_uvz # mfom_eer_embed, mfom_eer_uvz, mfom_eer_ovo, mfom_eer_uvz, mse, categorical_crossentropy
+    min_learn_rate: 0.000001
+    n_epoch: 200
+    optimizer: adadelta   # sgd, adadelta, rmsprop
+  finetune_set:
+    batch: 14
+    batch_type: ivec_stratified  # ivec_stratified, rnd_wnd, seq_slide_wnd
+    dropout: 0.5
+    freeze_wt: false
+    learn_rate: 0.001
+    loss: mfom_eer_embed #NOTE: mfom_eer_uvz only stratified!!! # mfom_eer_ovo, mse, categorical_crossentropy
+    optimizer: adadelta #sgd
+    min_learn_rate: 0.000001
+    n_epoch: 200

@@ -80,3 +80,11 @@ target/
 
 # Mac OS-specific storage files
 .DS_Store
+
+# data folders and files
+*.h5
+#/logs/
+#/experiments/
+
+# backup files
+*~

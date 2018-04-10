@@ -1,0 +1,19 @@
+name: py3
+channels:
+  - https://conda.anaconda.org/trung # multiprocessing-logging, pysoundfile, sidekit
+  - https://conda.anaconda.org/conda-forge
+  - https://conda.anaconda.org/numba # numba
+  - defaults
+dependencies:
+  - python=3.4
+  - Cython
+
+  # scienctific computing
+  - numpy=1.11.1
+  - scipy=0.17.1
+
+  # interactive ipython and notebook
+  - ipython
+  - jupyter
+  - jupyterhub
+  - ipywidgets=5.2.2

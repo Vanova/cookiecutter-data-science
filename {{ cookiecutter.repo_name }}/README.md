@@ -17,13 +17,19 @@ Project Organization
     │
     ├── docs               <- A default Sphinx project; see sphinx-doc.org for details
     │
-    ├── models             <- Trained and serialized models, model predictions, or model summaries
+    ├── envs               <- Environment settings files: Anaconda, Dockerfile
+    ├── experiments
+    │   ├── logs
+    │   ├── params         <- Training settings, hyperparameters
+    │   ├── submissions    <- Evaluation model results, submission to the challenge leaderboard
+    │   ├── system         <- Trained and serialized models, model predictions, or model summaries
+    │   └── experiment.py  <- Main file to run the particular experiment, it is based on the framework in 'src' folder
     │
     ├── notebooks          <- Jupyter notebooks. Naming convention is a number (for ordering),
     │                         the creator's initials, and a short `-` delimited description, e.g.
     │                         `1.0-jqp-initial-data-exploration`.
     │
-    ├── references         <- Data dictionaries, manuals, and all other explanatory materials.
+    ├── references         <- Manuals, literature and all other explanatory materials.
     │
     ├── reports            <- Generated analysis as HTML, PDF, LaTeX, etc.
     │   └── figures        <- Generated graphics and figures to be used in reporting
@@ -31,7 +37,7 @@ Project Organization
     ├── requirements.txt   <- The requirements file for reproducing the analysis environment, e.g.
     │                         generated with `pip freeze > requirements.txt`
     │
-    ├── src                <- Source code for use in this project.
+    ├── src                <- Main source code for use in this project. Framework structure.
     │   ├── __init__.py    <- Makes src a Python module
     │   │
     │   ├── data           <- Scripts to download or generate data
@@ -47,10 +53,15 @@ Project Organization
     │   │
     │   └── visualization  <- Scripts to create exploratory and results oriented visualizations
     │       └── visualize.py
+    |
+    ├── test_environment.py
+    |
+    ├── tests              <- Test framework code from 'src' folder
+    │   └── data           <- data for testing
     │
     └── tox.ini            <- tox file with settings for running tox; see tox.testrun.org
 
 
 --------
 
-<p><small>Project based on the <a target="_blank" href="https://drivendata.github.io/cookiecutter-data-science/">cookiecutter data science project template</a>. #cookiecutterdatascience</small></p>
+<p><small>Project is based on the <a target="_blank" href="https://github.com/Vanova/cookiecutter-data-science">cookiecutter data science project template</a>. #cookiecutterdatascience</small></p>

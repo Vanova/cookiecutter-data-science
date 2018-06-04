@@ -1,4 +1,4 @@
-Docker containers to reproduce DCASE2017 Baseline results
+Docker containers to reproduce {{cookiecutter.project_name}} results
 =========================================================
 
 This directory contains [docker](https://www.docker.com/) containers to reproduce DCASE2017 baseline system results. To install Docker Community Edition (Docker CE) follow the instructions from [Docker documentation ](https://docs.docker.com/engine/installation/). 

@@ -26,6 +26,12 @@ dependencies:
   - coloredlogs
   - tqdm
 
+  # CLI UI
+  - docopt
+
+  # Configs
+  - dotmap
+
   # interactive ipython and notebook
   - ipython
   - jupyter

@@ -2,41 +2,39 @@ help:
 	@cat Makefile
 
 DOCKER_NAME={{cookiecutter.repo_name}}_env
+
+# CUDA version settings
+GPU?=0
+CUDA_VERSION?=8.0
+CUDNN_VERSION?=6
+
+# local folders
+SRC?=$(cd .. && pwd)
+DATA?=~/wrkdir/datasets
+# container folders
+PROJ?=~/wrkdir/project/$(DOCKER_NAME)
+
 DOCKER_FILE=Dockerfile
+DOCKER=sudo GPU=$(GPU) nvidia-docker
 BACKEND=tensorflow
-SRC=$(shell dirname `pwd`)
-PROJ_DIR=/wrkdir/project
 
 build:
-	docker build -t $(DOCKER_NAME) -f $(DOCKER_FILE) .
+	$(DOCKER) build --build-arg cuda_version=$(CUDA_VERSION) --build-arg cudnn_version=$(CUDNN_VERSION) \
+		-t $(DOCKER_NAME) -f  $(DOCKER_FILE) .
 
-bash: build
-	docker run -it -v $(SRC):$(PROJ_DIR) $(DOCKER_NAME) bash
+bash: build	
+	$(DOCKER) run -it -v $(SRC):$(PROJ) -v $(DATA):/wrkdir/datasets $(DOCKER_NAME) bash
 
-task1: build
-	docker run -it -v $(SRC):$(PROJ_DIR) $(DOCKER_NAME) /bin/bash -c "python applications/task1.py -s dcase2017,gmm -o; python applications/task1.py -show_eval"
+ipython: build
+	$(DOCKER) run -it -v $(SRC):$(PROJ) -v $(DATA):/wrkdir/datasets --env KERAS_BACKEND=$(BACKEND) $(DOCKER_NAME) ipython
 
-task2: build
-	docker run -it -v $(SRC):$(PROJ_DIR) $(DOCKER_NAME) /bin/bash -c "python applications/task2.py -s dcase2017,gmm -o; python applications/task2.py -show_eval"
+notebook: build
+	$(DOCKER) run -it -v $(SRC):$(PROJ) -v $(DATA):/wrkdir/datasets --net=host --env KERAS_BACKEND=$(BACKEND) $(DOCKER_NAME)
 
-task3: build
-	docker run -it -v $(SRC):$(PROJ_DIR) $(DOCKER_NAME) /bin/bash -c "python applications/task3.py -s dcase2017,gmm -o; python applications/task3.py -show_eval"
+test: build
+	$(DOCKER) run -it -v $(SRC):$(PROJ) -v $(DATA):/wrkdir/datasets --env KERAS_BACKEND=$(BACKEND) $(DOCKER_NAME) py.test $(PROJ)
 
-task1_challenge: build
-	docker run -it -v $(SRC):$(PROJ_DIR) $(DOCKER_NAME) /bin/bash -c "python applications/task1.py -s dcase2017 -m challenge -o"
-
-task2_challenge: build
-	docker run -it -v $(SRC):$(PROJ_DIR) $(DOCKER_NAME) /bin/bash -c "python applications/task2.py -s dcase2017 -m challenge -o"
-
-task3_challenge: build
-	docker run -it -v $(SRC):$(PROJ_DIR) $(DOCKER_NAME) /bin/bash -c "python applications/task3.py -s dcase2017 -m challenge -o"
-
-test1: build
-	docker run -it -v $(SRC):$(PROJ_DIR) $(DOCKER_NAME) /bin/bash -c "python applications/task1.py -s minimal; python applications/task1.py -show_eval"
-
-test2: build
-	docker run -it -v $(SRC):$(PROJ_DIR) $(DOCKER_NAME) /bin/bash -c "python applications/task2.py -s minimal; python applications/task2.py -show_eval"
-
-test3: build
-	docker run -it -v $(SRC):$(PROJ_DIR) $(DOCKER_NAME) /bin/bash -c "python applications/task3.py -s minimal; python applications/task3.py -show_eval"
+# TODO fix according to project
+#task1: build
+#       $(DOCKER) run -it -v $(SRC):$(PROJ) $(DOCKER_NAME) /bin/bash -c "python applications/task1.py -s dcase2017,gmm -o; python applications/task1.py -show_eval"
 

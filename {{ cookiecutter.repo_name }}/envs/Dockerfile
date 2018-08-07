@@ -1,21 +1,18 @@
-# Environment: Conda, Python 2.7, Tensorflow, Keras
-# see example ref.: https://github.com/anurag/fastai-course-1/blob/master/Dockerfile
-# and https://www.tensorflow.org/install/install_linux
-# NOTE: running docker with GPU TensorFlow
-# nvidia-docker run -it -p 8888:8888 tensorflow/tensorflow:0.12.1-gpu
-
-FROM continuumio/miniconda3:latest
-
+# Environment: Conda, Python, Tensorflow, Keras
 MAINTAINER Ivan Kukanov <ivan@kukanov.com>
 
+ARG cuda_version=8.0
+ARG cudnn_version=6
+FROM nvidia/cuda:${cuda_version}-cudnn${cudnn_version}-devel-ubuntu14.04
+
 # Install extra packages if required
-RUN apt-get update -qq \
- && apt-get install --no-install-recommends -y \
+RUN apt-get update -qq && apt-get install --no-install-recommends -y \
     # Essentials
     build-essential \
     g++ \
     git \
-    locales
+    locales \
+    rm -rf /var/lib/apt/lists/*
 
 # Add the user that will run the app (no need to run as root)
 RUN groupadd -r vano && useradd -r -g vano vano
@@ -23,6 +20,7 @@ RUN groupadd -r vano && useradd -r -g vano vano
 # Working directory for data and projects
 WORKDIR /wrkdir/project
 RUN mkdir -p /wrkdir/project
+RUN mkdir -p /wrkdir/datasets
 RUN mkdir -p /wrkdir/env
 
 # Setup locales
@@ -48,6 +46,7 @@ COPY conda/ai.py2.yml /wrkdir/env/ai.yml
 COPY conda/ai.py3.yml /wrkdir/env/ai.yml
 {% endif %}
 
+# Install conda
 RUN conda update -n base conda
 RUN conda env create -f /wrkdir/env/ai.yml \
     && rm -rf /opt/conda/pkgs/*
@@ -56,6 +55,6 @@ RUN conda env create -f /wrkdir/env/ai.yml \
 COPY . /wrkdir/project/
 RUN chown -R vano:vano /wrkdir/project/*
 
-# activate the myapp environment
-ENV PATH /opt/conda/envs/ai/bin:$PATH
-
+# Activate the myapp environment
+ENV PATH='/opt/conda/envs/ai/bin:$PATH'
+ENV PYTHONPATH='/wrkdir/project:$PYTHONPATH'

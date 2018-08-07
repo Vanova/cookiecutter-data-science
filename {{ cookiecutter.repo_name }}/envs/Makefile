@@ -12,14 +12,14 @@ CUDNN_VERSION?=6
 SRC?=$(cd .. && pwd)
 DATA?=~/wrkdir/datasets
 # container folders
-PROJ?=~/wrkdir/project/$(DOCKER_NAME)
+PROJ?=/wrkdir/project/$(DOCKER_NAME)
 
 DOCKER_FILE=Dockerfile
 DOCKER=sudo GPU=$(GPU) nvidia-docker
 BACKEND=tensorflow
 
 build:
-	$(DOCKER) build --build-arg cuda_version=$(CUDA_VERSION) --build-arg cudnn_version=$(CUDNN_VERSION) \
+	docker build --build-arg cuda_version=$(CUDA_VERSION) --build-arg cudnn_version=$(CUDNN_VERSION) \
 		-t $(DOCKER_NAME) -f  $(DOCKER_FILE) .
 
 bash: build	

@@ -1,5 +1,4 @@
-# Environment: Conda, Python, Tensorflow, Keras
-MAINTAINER Ivan Kukanov <ivan@kukanov.com>
+# Environment: Conda, Python(2.7/3.5), Tensorflow(1.4.1), Keras(2.0.2)
 
 ARG cuda_version=8.0
 ARG cudnn_version=6
@@ -12,28 +11,14 @@ RUN apt-get update -qq && apt-get install --no-install-recommends -y \
     g++ \
     git \
     locales \
+    curl \
+    libsndfile1 \
+    sndfile-tools \
+    vim \
+    wget && \
     rm -rf /var/lib/apt/lists/*
-
-# Add the user that will run the app (no need to run as root)
-RUN groupadd -r vano && useradd -r -g vano vano
-
-# Working directory for data and projects
-WORKDIR /wrkdir/project
-RUN mkdir -p /wrkdir/project
-RUN mkdir -p /wrkdir/datasets
-RUN mkdir -p /wrkdir/env
-
-# Setup locales
-RUN dpkg-reconfigure locales && \
-    locale-gen C.UTF-8 && \
-    /usr/sbin/update-locale LANG=C.UTF-8
-ENV LC_ALL C.UTF-8
-
-RUN apt-get install -y curl
-RUN apt-get install -qq libsndfile1 sndfile-tools
-#RUN apt-get install -qq libglib2.0-0
-#RUN apt-get -y install libgl1-mesa-glx
 RUN apt-get clean
+ENV LC_ALL C.UTF-8
 
 ###
 # Take appropriate CONDA settings
@@ -47,14 +32,39 @@ COPY conda/ai.py3.yml /wrkdir/env/ai.yml
 {% endif %}
 
 # Install conda
-RUN conda update -n base conda
-RUN conda env create -f /wrkdir/env/ai.yml \
-    && rm -rf /opt/conda/pkgs/*
+ENV CONDA_DIR /opt/conda
+ENV PATH $CONDA_DIR/bin:$PATH
+
+RUN curl -LO http://repo.continuum.io/miniconda/Miniconda-latest-Linux-x86_64.sh && \
+    /bin/bash Miniconda-latest-Linux-x86_64.sh -f -b -p $CONDA_DIR && \
+    rm Miniconda-latest-Linux-x86_64.sh && \
+    echo export PATH=$CONDA_DIR/bin:$PATH > /etc/profile.d/conda.sh
+RUN conda update -y conda && \
+    pip install --upgrade pip
+
+# Add the user that will run the app (no need to run as root)
+# Working directory for data and projects
+ENV NB_USER vano
+ENV NB_UID 1000
+
+ARG cproj=/wrkdir/projects
+ARG cdata=/wrkdir/datasets
+
+RUN useradd -m -s /bin/bash -N -u $NB_UID $NB_USER && \
+    chown $NB_USER $CONDA_DIR -R && \
+    mkdir -p $cproj && \
+    mkdir -p $cdata && \
+    chown $NB_USER /wrkdir
+USER $NB_USER
+
+RUN conda env create -f /wrkdir/env/ai.yml && \
+    rm -rf /opt/conda/pkgs/* && \
+    conda clean -yt
 
 # Install project into container
-COPY . /wrkdir/project/
-RUN chown -R vano:vano /wrkdir/project/*
+WORKDIR ${cproj}
 
-# Activate the myapp environment
-ENV PATH='/opt/conda/envs/ai/bin:$PATH'
-ENV PYTHONPATH='/wrkdir/project:$PYTHONPATH'
+# Activate the environment
+ENV PATH $CONDA_DIR/envs/ai/bin:$PATH
+ENV PATH $HOME/bin:$PATH
+ENV PYTHONPATH ${cproj}:$PYTHONPATH

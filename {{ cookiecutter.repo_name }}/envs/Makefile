@@ -9,7 +9,7 @@ CUDA_VERSION?=8.0
 CUDNN_VERSION?=6
 
 # local folders
-PROJ?=$(cd .. && pwd)
+PROJ?=$(shell dirname `cd .. && pwd`)
 DATA?=~/wrkdir/datasets
 
 # container folders

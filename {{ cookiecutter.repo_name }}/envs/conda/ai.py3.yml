@@ -72,4 +72,4 @@ dependencies:
     - sklearn_pandas
     # DCASE 2017 evaluation
     - sed_eval==0.1.8
-    - youtube-idl
+    #- youtube-idl

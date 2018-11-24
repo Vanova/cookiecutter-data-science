@@ -77,3 +77,6 @@ dependencies:
     - youtube-dl
     # parallel progress bar
     - p_tqdm
+    # hyper params search
+    - hyperopt==0.1
+    - networkx==1.1

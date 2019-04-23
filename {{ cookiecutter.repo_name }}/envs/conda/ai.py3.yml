@@ -2,7 +2,7 @@
 # create environment: conda env create -f ai.py3.yml
 ###
 
-name: ai
+name: ai3
 channels:
   - https://conda.anaconda.org/trung 
   - https://conda.anaconda.org/conda-forge

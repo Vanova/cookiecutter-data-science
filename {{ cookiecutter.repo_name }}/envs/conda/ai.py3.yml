@@ -7,6 +7,7 @@ channels:
   - https://conda.anaconda.org/trung 
   - https://conda.anaconda.org/conda-forge
   - https://conda.anaconda.org/numba 
+  - pytorch
   - defaults
 dependencies:
   - python=3.5
@@ -48,6 +49,8 @@ dependencies:
   - pymc
   - pygpu
   - scikit-learn=0.18.1
+  - pytorch
+  - torchvision
 
   # data management
   - h5py # create dataset
@@ -65,7 +68,7 @@ dependencies:
     # Lock version for key libraries only
     - tensorflow-gpu==1.4.1
     - librosa==0.5.0
-    - keras==2.0.2
+    - keras==2.2.2
     - hyperopt==0.1
     - six>=1.10.0
     - pafy

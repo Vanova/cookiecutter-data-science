@@ -1,79 +1,124 @@
-# Convolutional Recurrent Neural Network (CRNN) settings
+# {{cookiecutter.project_name}} Configurations
 # ==========================================================
 # Flow
 # ==========================================================
-flow:
-  extract_features: true # prepare i-vectors
-  visualize_features: false # t-SNE for i-vec or spectrogram for fbank
+pipeline:
+  init_dataset: true
+  extract_features: true
   search_hyperparams: false
   train_system: true
   test_system: true
-  calibrate: false
-  visualize_network: false
-  visualize_scores: false
   evaluate_system: true
 
 # ==========================================================
 # General
 # ==========================================================
-general:
-  system: lre17_mlp_openset # lre17_mlp_fixedset #lre17_mlp_fixedset_MLC
-  development_dataset: CHiMEHome_DomesticAudioTag_DevelopmentSet
-  submission_dataset: CHiMEHome_DomesticAudioTag_ChallengeSet
-
+experiment:
+  name: ogits
+  development_dataset: /home/vano/wrkdir/datasets/OGI-ML
+  submission_dataset: /home/vano/wrkdir/datasets/OGI-ML
+  lists_dir: ../data/meta # dataset cashed index
 
 # ==========================================================
-# Paths
+# Paths of the experiment
 # ==========================================================
 path:
-  development_dataset: /home/vano/wrkdir/projects_data/LRE17/SCORE_FUSION/open_set/
-  evaluation_dataset: /home/vano/wrkdir/projects_data/LRE17/SCORE_FUSION/open_set/
-  base: experiments/
+  base: system/
+  meta: meta_data/
+  logs: logs/
   features: features/
   models: models/
-  results_test: test_results/
-  results_eval: eval_results/
-
+  hyper_search: hyper_search/
+  train_result: train_results/
+  submission: submissions/
 
 # ==========================================================
 # Feature extraction
 # ==========================================================
 features:
-  fs: 44100
-  win_length_seconds: 0.04 #def: 0.04
-  hop_length_seconds: 0.02 #def: 0.02
-  type: scores #fbank, stft
+  type: fbank
 
-  scores:
-    dim: 14
+  fbank:
+    bands: 96
+    fmax: 4000 # sample rate 8000Hz / 2
+    fmin: 0
+    hop_length_seconds: 0.02
+    htk: false
+    include_delta: false
+    include_acceleration: false
+    mono: true
+    n_fft: 512
+    window: hamming_asymmetric
+    win_length_seconds: 0.04
+    delta:
+      width: 9
+    acceleration:
+      width: 9
 
+  stft: # bands number = n_fft/2
+    fmin: 0
+    fmax: 4000
+    hop_length_seconds: 0.02
+    htk: false
+    include_delta: false
+    include_acceleration: false
+    mono: true
+    n_fft: 1024
+    window: hamming_asymmetric
+    win_length_seconds: 0.04
+    delta:
+      width: 9
+    acceleration:
+      width: 9
 
 # ==========================================================
-# Classifier
+# Model settings
 # ==========================================================
-classifier:
-  method: mlp_mfom # cnn, cnn_rnn, cnn_rnn_attention
-  metrics: [eer]
-  pretrain: true
-  finetune: false
-  pretrain_set:
-    activations: [sigmoid, sigmoid, softmax] # ['elu', 'elu', 'elu', 'elu', 'softmax']
-    batch: 8
-    batch_type: ivec_stratified    # rnd_wnd, seq_slide_wnd, TODO: stratified!!!
-    dropout: 0.5
-    dim: 14
-    learn_rate: 0.01
-    loss: mfom_eer_normalized # mfom_eer_uvz #mfom_eer_uvz #mfom_eer_uvz # mfom_eer_embed, mfom_eer_uvz, mfom_eer_ovo, mfom_eer_uvz, mse, categorical_crossentropy
-    min_learn_rate: 0.000001
-    n_epoch: 200
-    optimizer: adadelta   # sgd, adadelta, rmsprop
-  finetune_set:
-    batch: 14
-    batch_type: ivec_stratified  # ivec_stratified, rnd_wnd, seq_slide_wnd
-    dropout: 0.5
-    freeze_wt: false
-    learn_rate: 0.001
-    loss: mfom_eer_embed #NOTE: mfom_eer_uvz only stratified!!! # mfom_eer_ovo, mse, categorical_crossentropy
-    optimizer: adadelta #sgd
-    min_learn_rate: 0.000001
-    n_epoch: 200
+model:
+  type: sed_ogits
+
+  sed_ogits:
+    do_pretrain: true
+    do_finetune: true
+    pretrain_set:
+      metrics: [class_wise_eer, pooled_eer, micro_f1]
+      activation: elu
+      batch: 32
+      batch_type: sed_sequence
+      context_wnd: 128          # frame context
+      dropout: 0.1
+      feature_maps: 96
+      loss: binary_crossentropy
+      learn_rate: 0.0001
+      n_epoch: 400
+      optimizer: adam
+      out_score: sigmoid
+
+    finetune_set:
+      activation: elu
+      metrics: [class_wise_eer, pooled_eer, micro_f1]
+      batch: 32
+      batch_type: sed_sequence
+      context_wnd: 128
+      dropout: 0.1
+      freeze_wt: false
+      feature_maps: 96
+      loss: mfom_eer_normalized
+      learn_rate: 0.0001
+      n_epoch: 400
+      optimizer: adam
+      out_score: tanh
+
+# ==========================================================
+# Trainer settings
+# ==========================================================
+callback:
+  monitor: class_wise_eer # micro_f1
+  mode: min # max for micro_f1
+  chpt_save_best_only: true
+  chpt_save_weights_only: true
+  lr_factor: 0.5
+  lr_patience: 20
+  lr_min: 0.000001
+  estop_patience: 25
+  tensorboard_write_graph: true

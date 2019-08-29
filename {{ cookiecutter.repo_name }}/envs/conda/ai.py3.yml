@@ -49,8 +49,8 @@ dependencies:
   - pymc
   - pygpu
   - scikit-learn=0.18.1
-  - pytorch
-  - torchvision
+  - pytorch=0.4.0
+  - torchvision=0.2.1
 
   # data management
   - h5py # create dataset
@@ -61,13 +61,12 @@ dependencies:
   - openpyxl # read excel
   - xlwt # create excel
   - msgpack-python # binary serialization format
-
   - llvmlite=0.18.0
   
   - pip:
     # Lock version for key libraries only
     - tensorflow-gpu==1.4.1
-    - librosa==0.5.0
+    - librosa==0.6.0
     - keras==2.2.2
     - hyperopt==0.1
     - six>=1.10.0

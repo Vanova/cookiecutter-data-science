@@ -70,21 +70,6 @@ The directory structure of your new project looks like this:
     │                         generated with `pip freeze > requirements.txt`
     │
     ├── src                <- Main source code for use in this project. Framework structure.
-    │   ├── __init__.py    <- Makes src a Python module
-    │   │
-    │   ├── data           <- Scripts to download or generate data
-    │   │   └── make_dataset.py
-    │   │
-    │   ├── features       <- Scripts to turn raw data into features for modeling
-    │   │   └── build_features.py
-    │   │
-    │   ├── models         <- Scripts to train models and then use trained models to make
-    │   │   │                 predictions
-    │   │   ├── predict_model.py
-    │   │   └── train_model.py
-    │   │
-    │   └── visualization  <- Scripts to create exploratory and results oriented visualizations
-    │       └── visualize.py
     |
     ├── test_environment.py
     |
@@ -93,10 +78,6 @@ The directory structure of your new project looks like this:
     │
     └── tox.ini            <- tox file with settings for running tox; see tox.testrun.org
 ```
-
-## Contributing
-
-We welcome contributions! [See the docs for guidelines](https://drivendata.github.io/cookiecutter-data-science/#contributing).
 
 ### Installing development requirements
 ------------

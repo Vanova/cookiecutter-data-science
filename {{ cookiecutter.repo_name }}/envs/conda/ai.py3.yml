@@ -1,16 +1,17 @@
 ###
-# create environment: conda env create -f ai.py3.yml
+# create environment: conda env create -f dfdc.yml
 ###
 
-name: ai3
+name: dfdc
 channels:
   - https://conda.anaconda.org/trung 
   - https://conda.anaconda.org/conda-forge
   - https://conda.anaconda.org/numba 
   - pytorch
   - defaults
+
 dependencies:
-  - python=3.5
+  - python=3.6
   - Cython
 
   # scienctific computing
@@ -23,8 +24,6 @@ dependencies:
   - pandas
   - sympy
   - nose
-  - numba
-  - nltk
   - coloredlogs
   - tqdm
   
@@ -48,9 +47,9 @@ dependencies:
   # data science tools
   - pymc
   - pygpu
-  - scikit-learn=0.18.1
-  - pytorch=0.4.0
-  - torchvision=0.2.1
+  - scikit-learn
+  - pytorch=1.4.0
+  - torchvision
 
   # data management
   - h5py # create dataset
@@ -61,12 +60,12 @@ dependencies:
   - openpyxl # read excel
   - xlwt # create excel
   - msgpack-python # binary serialization format
-  - llvmlite=0.18.0
+  - llvmlite
   
   - pip:
     # Lock version for key libraries only
     - tensorflow-gpu==1.4.1
-    - librosa==0.6.0
+    - librosa==0.5.0
     - keras==2.2.2
     - hyperopt==0.1
     - six>=1.10.0
